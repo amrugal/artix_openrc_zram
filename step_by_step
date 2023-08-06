@@ -1,0 +1,76 @@
+1. Install `zram-init` from AUR:
+
+   ```bash
+   yay -S zram-init  # Replace 'yay' with your AUR helper of choice
+   ```
+
+2. Download the OpenRC configuration files for `zram-init`:
+   Download the necessary OpenRC configuration files for `zram-init` from the GitHub repository:
+
+   ```bash
+   wget https://raw.githubusercontent.com/vaeth/zram-init/main/openrc/conf.d/zram-init
+   wget https://raw.githubusercontent.com/vaeth/zram-init/main/openrc/init.d/zram-init
+   ```
+
+3. Move the configuration and service files to the appropriate directories:
+   Move the downloaded configuration and service files to the corresponding OpenRC directories:
+
+   ```bash
+   sudo mv zram-init /etc/conf.d/
+   sudo mv zram-init /etc/init.d/
+   ```
+
+4. Make the service file executable:
+   Ensure that the `zram-init` service script is executable:
+
+   ```bash
+   sudo chmod +x /etc/init.d/zram-init
+   sudo chmod +x /etc/conf.d/zram-init
+   ```
+
+5. Enable and start the `zram-init` service:
+   Add the `zram-init` service to the boot runlevel and start it:
+
+   ```bash
+   sudo rc-update add zram-init boot
+   sudo rc-service zram-init start
+   ```
+
+6. Verify ZRAM is active:
+   Confirm that the ZRAM devices are set up and active by checking the `/dev/zram*` devices:
+
+   ```bash
+   lsblk
+   ```
+
+   You should see entries for `/dev/zram0`, `/dev/zram1`, and so on, depending on the number of ZRAM devices defined in the configuration file.
+
+7. Optionally, enable swap partition with UUID in `/etc/fstab`:
+   If you want to enable your swap partition using its UUID in `/etc/fstab`, find the UUID of the swap partition with `blkid` and then add it to `/etc/fstab`:
+
+   ```bash
+   sudo blkid  # Find the UUID of your swap partition (e.g., UUID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx")
+   ```
+
+   Edit `/etc/fstab` with your preferred text editor:
+
+   ```bash
+   sudo nano /etc/fstab
+   ```
+
+   Add the following line, replacing `UUID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"` with the actual UUID of your swap partition:
+
+   ```bash
+   UUID="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" none swap defaults 0 0
+   ```
+
+   Save and exit the text editor.
+
+8. Reboot your system:
+   After completing the above steps, reboot your system to ensure that the changes take effect:
+
+   ```bash
+   sudo reboot
+   ```
+
+Once your system has booted, `zram-init` will create the ZRAM devices based on the configuration, and your swap partition (if enabled) will also be used. The system should now be utilizing ZRAM for improved memory management and performance.
